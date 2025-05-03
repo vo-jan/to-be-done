@@ -9,6 +9,7 @@ function App() {
   const [dueDate, setDueDate] = useState('');
   const [completedTodos, setCompletedTodos] = useState([]); // Completed todos
   const [theme, setTheme] = useState('light'); // Default is light theme
+  const [editedTodos, setEditedTodos] = useState({});
   
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -66,6 +67,51 @@ function App() {
     setTodos((prevTodos) => prevTodos.filter((item) => item.id !== todo.id));
   };
   
+  const recoverTodo = async (todo) => {
+    const updatedTodo = {
+      ...todo,
+      completedAt: null
+    };
+  
+    // Send update to backend
+    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, updatedTodo);
+  
+    // Move it back to active
+    setCompletedTodos(prev => prev.filter(t => t.id !== todo.id));
+    setTodos(prev => [...prev, updatedTodo]);
+  };
+
+  const handleEdit = (id, field, value) => {
+    setEditedTodos((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [field]: value,
+      },
+    }));
+  
+    // Update the local display too
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, [field]: value } : todo
+      )
+    );
+  };
+  
+  const saveEdit = async (todo) => {
+    const updatedFields = editedTodos[todo.id] || {};
+    const updatedTodo = { ...todo, ...updatedFields };
+  
+    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, updatedTodo);
+  
+    // Clean up edit cache
+    setEditedTodos((prev) => {
+      const copy = { ...prev };
+      delete copy[todo.id];
+      return copy;
+    });
+  };  
+
   const deleteCompletedTodo = (id) => {
     setCompletedTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
@@ -102,11 +148,21 @@ function App() {
         {todos.map((todo) => (
           <li key={todo.id} className="todo-item">
             <div className="todo-text">
-              <strong>{todo.text}</strong>
-              {todo.comment && <div>💬 {todo.comment}</div>}
-              {todo.dueDate && !isNaN(Date.parse(todo.dueDate)) && (
-                <div>📅 {new Date(todo.dueDate).toLocaleString()}</div>
-              )}
+            <input
+              value={todo.text}
+              onChange={(e) => handleEdit(todo.id, 'text', e.target.value)}
+            />
+            <input
+              value={todo.comment || ''}
+              onChange={(e) => handleEdit(todo.id, 'comment', e.target.value)}
+              placeholder="Comment"
+            />
+            <input
+              type="datetime-local"
+              value={todo.dueDate || ''}
+              onChange={(e) => handleEdit(todo.id, 'dueDate', e.target.value)}
+            />
+            <button onClick={() => saveEdit(todo)}>💾</button>
             </div>
             <button className="complete-btn" onClick={() => markAsCompleted(todo)}>✅</button>
           </li>
@@ -125,12 +181,8 @@ function App() {
                 )}
                 <div>✅ Completed: {new Date(todo.completedAt).toLocaleString()}</div>
               </div>
-              <button
-                className="delete-completed-btn"
-                onClick={() => deleteCompletedTodo(todo.id)}
-              >
-                🗑️
-              </button>
+              <button onClick={() => recoverTodo(todo)}>♻️</button>
+              <button className="delete-completed-btn" onClick={() => deleteCompletedTodo(todo.id)}>🗑️</button>
             </li>
           ))}
         </ul>
