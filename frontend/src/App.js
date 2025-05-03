@@ -21,9 +21,13 @@ function App() {
 
   const fetchTodos = async () => {
     const res = await axios.get('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos');
-    // Filter only active todos (those that don't have a completedAt timestamp)
-    const activeTodos = res.data.filter(todo => !todo.completedAt);
+    const allTodos = res.data;
+  
+    const activeTodos = allTodos.filter(todo => !todo.completedAt);
+    const doneTodos = allTodos.filter(todo => todo.completedAt);
+  
     setTodos(activeTodos);
+    setCompletedTodos(doneTodos);
   };
 
   const addTodo = async () => {
