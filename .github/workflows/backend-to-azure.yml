@@ -18,12 +18,12 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'  # Adjust Node.js version based on your project requirements
+        node-version: '22.x'  # Adjust Node.js version based on your project requirements
 
     - name: Install dependencies
       run: |
-        cd backend  # Go to the `backend` directory
-        npm install  # Install dependencies for the backend
+        cd backend
+        npm install
 
     - name: Log in to Azure
       uses: azure/login@v1
@@ -41,7 +41,3 @@ jobs:
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         package: './backend'  # Ensure only the backend folder is used for deployment
         app-directory: './backend'  # Make sure it points to the backend directory
-
-    # Clear any default `frontend` detection by explicitly overriding `webapp-location`
-    - name: Override Frontend Folder
-      run: echo "Backend only should be deployed"
