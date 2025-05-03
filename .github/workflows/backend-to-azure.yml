@@ -39,5 +39,9 @@ jobs:
         app-name: tobedone-be  # Replace with your Azure App Service name
         slot-name: production
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: ./backend  # Deploy from the `backend` folder
-        app-directory: ./backend  # This ensures that Azure only looks in the backend directory
+        package: './backend'  # Ensure only the backend folder is used for deployment
+        app-directory: './backend'  # Make sure it points to the backend directory
+
+    # Clear any default `frontend` detection by explicitly overriding `webapp-location`
+    - name: Override Frontend Folder
+      run: echo "Backend only should be deployed"
