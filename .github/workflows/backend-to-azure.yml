@@ -29,19 +29,10 @@ jobs:
         cd backend
         npm install
 
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
     - name: Deploy to Azure App Service
       uses: azure/webapps-deploy@v2
       with:
-        app-name: tobedone-be  # Replace with your Azure App Service name
+        app-name: tobedone-be
         slot-name: production
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: './backend'  # This is where you specify the backend directory
-        app-directory: '.'  # In Azure App Service, the app directory should be '.' as it's pointing to the root of your app
+        package: ./backend
