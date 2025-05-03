@@ -20,7 +20,7 @@ function App() {
   };
 
   const fetchTodos = async () => {
-    const res = await axios.get('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net');
+    const res = await axios.get('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos');
     // Filter only active todos (those that don't have a completedAt timestamp)
     const activeTodos = res.data.filter(todo => !todo.completedAt);
     setTodos(activeTodos);
@@ -35,7 +35,7 @@ function App() {
     };
     
     // Send the new todo to the backend
-    await axios.post('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net', newTodoObj);
+    await axios.post('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos', newTodoObj);
     
     // Clear input fields
     setNewTodo('');
@@ -53,7 +53,7 @@ function App() {
     };
 
     // Update the backend with the completed status
-    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/${todo.id}`, completedTodo);
+    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, completedTodo);
   
     // Add the completed todo to the completedTodos list (in frontend state)
     setCompletedTodos((prevCompletedTodos) => [...prevCompletedTodos, completedTodo]);
