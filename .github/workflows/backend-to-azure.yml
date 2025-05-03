@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'  # Only trigger on changes in the `backend` folder
+      - 'backend/**'  # Trigger deployment only when changes occur in the `backend` folder
 
 jobs:
   deploy:
@@ -18,12 +18,12 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'  # Use the correct Node.js version for your project
+        node-version: '16'  # Adjust Node.js version based on your project requirements
 
     - name: Install dependencies
       run: |
-        cd backend  # Go to the `backend` folder
-        npm install
+        cd backend  # Go to the `backend` directory
+        npm install  # Install dependencies for the backend
 
     - name: Log in to Azure
       uses: azure/login@v1
@@ -39,4 +39,5 @@ jobs:
         app-name: tobedone-be  # Replace with your Azure App Service name
         slot-name: production
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: ./backend  # Only deploy the `backend` folder
+        package: ./backend  # Deploy from the `backend` folder
+        app-directory: ./backend  # This ensures that Azure only looks in the backend directory
