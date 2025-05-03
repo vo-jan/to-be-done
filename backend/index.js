@@ -30,7 +30,6 @@ app.put('/todos/:id', (req, res) => {
   const id = req.params.id;
   const { completedAt } = req.body;
 
-  // Use loose equality (==) to allow number/string match
   const index = todos.findIndex(todo => todo.id == id);
 
   if (index === -1) {
