@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'  # Trigger the workflow only when files in the `backend` folder are changed
+      - 'backend/**'  # Trigger deployment only when changes occur in the `backend` folder
 
 jobs:
   deploy:
@@ -18,11 +18,11 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'  # Use the correct Node.js version for your project
+        node-version: '22.x'  # Adjust Node.js version based on your project requirements
 
     - name: Install dependencies
-      working-directory: ./backend  # Install dependencies in the `backend` folder
       run: |
+        cd backend
         npm install
 
     - name: Log in to Azure
@@ -39,4 +39,5 @@ jobs:
         app-name: tobedone-be  # Replace with your Azure App Service name
         slot-name: production
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: ./backend  # Specify the folder you want to deploy
+        package: './backend'  # This is where you specify the backend directory
+        app-directory: '.'  # In Azure App Service, the app directory should be '.' as it's pointing to the root of your app
