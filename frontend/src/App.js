@@ -11,6 +11,7 @@ function App() {
   const [theme, setTheme] = useState('light'); // Default is light theme
   const [editedTodos, setEditedTodos] = useState({});
   const [editMode, setEditMode] = useState({});
+  const [editData, setEditData] = useState({});
 
   
   const toggleTheme = () => {
@@ -83,13 +84,25 @@ function App() {
     setTodos(prev => [...prev, updatedTodo]);
   };
 
-  const toggleEditMode = (id) => {
+  const toggleEditMode = (todo) => {
     setEditMode((prev) => ({
       ...prev,
-      [id]: !prev[id],
+      [todo.id]: !prev[todo.id],
     }));
+  
+    // When entering edit mode, copy data to local editData
+    if (!editMode[todo.id]) {
+      setEditData((prev) => ({
+        ...prev,
+        [todo.id]: {
+          text: todo.text,
+          comment: todo.comment || '',
+          dueDate: todo.dueDate || '',
+        },
+      }));
+    }
   };
-
+  
   const handleEdit = (id, field, value) => {
     setEditedTodos((prev) => ({
       ...prev,
@@ -106,20 +119,41 @@ function App() {
       )
     );
   };
+
+  const handleEditChange = (id, field, value) => {
+    setEditData((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [field]: value,
+      },
+    }));
+  };
   
   const saveEdit = async (todo) => {
-    const updatedFields = editedTodos[todo.id] || {};
-    const updatedTodo = { ...todo, ...updatedFields };
+    const updated = {
+      ...todo,
+      ...editData[todo.id],
+    };
   
-    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, updatedTodo);
-  
-    // Clean up edit cache
-    setEditedTodos((prev) => {
-      const copy = { ...prev };
-      delete copy[todo.id];
-      return copy;
+    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, updated);
+    setEditMode((prev) => ({ ...prev, [todo.id]: false }));
+    setEditData((prev) => {
+      const newData = { ...prev };
+      delete newData[todo.id];
+      return newData;
     });
-  };  
+    fetchTodos();
+  };
+
+  const cancelEdit = (id) => {
+    setEditMode((prev) => ({ ...prev, [id]: false }));
+    setEditData((prev) => {
+      const newData = { ...prev };
+      delete newData[id];
+      return newData;
+    });
+  };
 
   const deleteCompletedTodo = (id) => {
     setCompletedTodos((prev) => prev.filter((todo) => todo.id !== id));
@@ -160,21 +194,21 @@ function App() {
             {editMode[todo.id] ? (
               <>
                 <input
-                  value={todo.text}
-                  onChange={(e) => handleEdit(todo.id, 'text', e.target.value)}
+                  value={editData[todo.id]?.text || ''}
+                  onChange={(e) => handleEditChange(todo.id, 'text', e.target.value)}
                 />
                 <input
-                  value={todo.comment || ''}
-                  onChange={(e) => handleEdit(todo.id, 'comment', e.target.value)}
+                  value={editData[todo.id]?.comment || ''}
+                  onChange={(e) => handleEditChange(todo.id, 'comment', e.target.value)}
                   placeholder="Comment"
                 />
                 <input
                   type="datetime-local"
-                  value={todo.dueDate || ''}
-                  onChange={(e) => handleEdit(todo.id, 'dueDate', e.target.value)}
+                  value={editData[todo.id]?.dueDate || ''}
+                  onChange={(e) => handleEditChange(todo.id, 'dueDate', e.target.value)}
                 />
-                <button onClick={() => saveEdit(todo)}>💾 Save</button>
-                <button onClick={() => toggleEditMode(todo.id)}>❌ Cancel</button>
+                <button onClick={() => saveEdit(todo)}>💾</button>
+                <button onClick={() => cancelEdit(todo.id)}>❌</button>
               </>
             ) : (
               <>
@@ -183,11 +217,13 @@ function App() {
                 {todo.dueDate && !isNaN(Date.parse(todo.dueDate)) && (
                   <div>📅 {new Date(todo.dueDate).toLocaleString()}</div>
                 )}
-                <button onClick={() => toggleEditMode(todo.id)}>✏️ Edit</button>
               </>
             )}
           </div>
-          <button className="complete-btn" onClick={() => markAsCompleted(todo)}>✅</button>
+          <div className="todo-actions">
+            <button className="edit-btn" onClick={() => toggleEditMode(todo)}>✏️</button>
+            <button className="complete-btn" onClick={() => markAsCompleted(todo)}>✅</button>
+          </div>
         </li>        
         ))}
       </ul>

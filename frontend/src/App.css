@@ -160,6 +160,11 @@ body.dark .todo-item {
   transition: background 0.2s ease;
 }
 
+.todo-actions {
+  display: flex;
+  gap: 5px;
+}
+
 .delete-completed-btn:hover {
   background: #d9534f;
   color: white;
