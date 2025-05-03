@@ -39,5 +39,5 @@ jobs:
         app-name: tobedone-be  # Replace with your Azure App Service name
         slot-name: production
         publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: './backend'  # Ensure only the backend folder is used for deployment
-        app-directory: './backend'  # Make sure it points to the backend directory
+        package: './backend'  # This is where you specify the backend directory
+        app-directory: '.'  # In Azure App Service, the app directory should be '.' as it's pointing to the root of your app
