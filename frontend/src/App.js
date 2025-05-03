@@ -10,6 +10,8 @@ function App() {
   const [completedTodos, setCompletedTodos] = useState([]); // Completed todos
   const [theme, setTheme] = useState('light'); // Default is light theme
   const [editedTodos, setEditedTodos] = useState({});
+  const [editMode, setEditMode] = useState({});
+
   
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -81,6 +83,13 @@ function App() {
     setTodos(prev => [...prev, updatedTodo]);
   };
 
+  const toggleEditMode = (id) => {
+    setEditMode((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const handleEdit = (id, field, value) => {
     setEditedTodos((prev) => ({
       ...prev,
@@ -147,25 +156,39 @@ function App() {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id} className="todo-item">
-            <div className="todo-text">
-            <input
-              value={todo.text}
-              onChange={(e) => handleEdit(todo.id, 'text', e.target.value)}
-            />
-            <input
-              value={todo.comment || ''}
-              onChange={(e) => handleEdit(todo.id, 'comment', e.target.value)}
-              placeholder="Comment"
-            />
-            <input
-              type="datetime-local"
-              value={todo.dueDate || ''}
-              onChange={(e) => handleEdit(todo.id, 'dueDate', e.target.value)}
-            />
-            <button onClick={() => saveEdit(todo)}>💾</button>
-            </div>
-            <button className="complete-btn" onClick={() => markAsCompleted(todo)}>✅</button>
-          </li>
+          <div className="todo-text">
+            {editMode[todo.id] ? (
+              <>
+                <input
+                  value={todo.text}
+                  onChange={(e) => handleEdit(todo.id, 'text', e.target.value)}
+                />
+                <input
+                  value={todo.comment || ''}
+                  onChange={(e) => handleEdit(todo.id, 'comment', e.target.value)}
+                  placeholder="Comment"
+                />
+                <input
+                  type="datetime-local"
+                  value={todo.dueDate || ''}
+                  onChange={(e) => handleEdit(todo.id, 'dueDate', e.target.value)}
+                />
+                <button onClick={() => saveEdit(todo)}>💾 Save</button>
+                <button onClick={() => toggleEditMode(todo.id)}>❌ Cancel</button>
+              </>
+            ) : (
+              <>
+                <strong>{todo.text}</strong>
+                {todo.comment && <div>💬 {todo.comment}</div>}
+                {todo.dueDate && !isNaN(Date.parse(todo.dueDate)) && (
+                  <div>📅 {new Date(todo.dueDate).toLocaleString()}</div>
+                )}
+                <button onClick={() => toggleEditMode(todo.id)}>✏️ Edit</button>
+              </>
+            )}
+          </div>
+          <button className="complete-btn" onClick={() => markAsCompleted(todo)}>✅</button>
+        </li>        
         ))}
       </ul>
       <div className="completed-todos">
