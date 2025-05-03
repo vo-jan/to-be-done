@@ -1,0 +1,166 @@
+/* Basic Reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Global Light Mode */
+body.light {
+  background-color: #ffffff; /* Light mode background */
+  color: #333; /* Light mode text color */
+}
+
+body.light input,
+body.light .todo-item,
+body.light button {
+  background-color: #fff; /* Light background for inputs and buttons */
+  color: #333; /* Light text color */
+}
+
+/* Global Dark Mode */
+body.dark {
+  background-color: #333; /* Dark mode background */
+  color: #f4f4f4; /* Dark mode text color */
+}
+
+body.dark input,
+body.dark .todo-item,
+body.dark button {
+  background-color: #444; /* Dark background for inputs and buttons */
+  color: #f4f4f4; /* Light text color */
+}
+
+/* App Container */
+.app {
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+/* Form Styles */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+input {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+input:focus {
+  border-color: #0078d4;
+}
+
+button {
+  padding: 10px;
+  font-size: 1em;
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #005a9e;
+}
+
+/* To-Do Item Styles */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+/* Light Mode To-Do */
+body.light .todo-item {
+  background-color: #f4f4f4; /* Light background for to-do items */
+  color: #333; /* Light mode text color */
+}
+
+/* Dark Mode To-Do */
+body.dark .todo-item {
+  background-color: #444; /* Dark background for to-do items */
+  color: #f4f4f4; /* Dark mode text color */
+}
+
+/* Button Styling for Complete Button */
+.complete-btn {
+  font-size: 1.2em;
+  padding: 6px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  background: transparent;
+  border: 2px solid #28a745;
+  color: #28a745;
+}
+
+.complete-btn:hover {
+  background: #28a745;
+  color: white;
+}
+
+/* Completed To-Dos Styling */
+.completed-todos {
+  margin-top: 50px;
+}
+
+.completed-todos h3 {
+  text-align: center;
+}
+
+.completed-todos ul {
+  padding: 0;
+  list-style: none;
+}
+
+.completed-todos li {
+  background-color: #dff0d8;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.completed-todos li div {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #4e9c4a;
+}
+
+.delete-completed-btn {
+  background: transparent;
+  border: 2px solid #d9534f;
+  color: #d9534f;
+  font-size: 1.2em;
+  padding: 6px;
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background 0.2s ease;
+}
+
+.delete-completed-btn:hover {
+  background: #d9534f;
+  color: white;
+}
