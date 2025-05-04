@@ -28,7 +28,7 @@ app.post('/todos', (req, res) => {
 
 app.put('/todos/:id', (req, res) => {
   const id = req.params.id;
-  const { completedAt } = req.body;
+  const updatedFields = req.body;
 
   const index = todos.findIndex(todo => todo.id == id);
 
@@ -37,9 +37,14 @@ app.put('/todos/:id', (req, res) => {
     return res.status(404).json({ message: 'Todo not found' });
   }
 
-  todos[index].completedAt = completedAt;
+  // Merge updated fields into the existing todo
+  todos[index] = {
+    ...todos[index],
+    ...updatedFields,
+    id: todos[index].id // ensure ID is not overwritten
+  };
 
-  console.log('Todo marked as completed:', todos[index]);
+  console.log('Todo updated:', todos[index]);
   res.status(200).json(todos[index]);
 });
 
