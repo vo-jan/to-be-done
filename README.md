@@ -1,5 +1,6 @@
 # to-be-done - simple task tracker
-![preview](https://github.com/user-attachments/assets/dbb98e1e-bfc6-4dbe-a39f-ef0d3b0c6a5d)
+![preview](https://github.com/user-attachments/assets/84bdfc88-7ac3-4358-8cfd-d682fcb0958a)
+
 
 Simple web app for tracking mundane, everyday tasks created with Node.JS.
 Allows the user to:
