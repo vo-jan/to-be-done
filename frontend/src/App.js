@@ -9,7 +9,6 @@ function App() {
   const [dueDate, setDueDate] = useState('');
   const [completedTodos, setCompletedTodos] = useState([]); // Completed todos
   const [theme, setTheme] = useState('light'); // Default is light theme
-  const [editedTodos, setEditedTodos] = useState({});
   const [editMode, setEditMode] = useState({});
   const [editData, setEditData] = useState({});
 
@@ -101,23 +100,6 @@ function App() {
         },
       }));
     }
-  };
-  
-  const handleEdit = (id, field, value) => {
-    setEditedTodos((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        [field]: value,
-      },
-    }));
-  
-    // Update the local display too
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id ? { ...todo, [field]: value } : todo
-      )
-    );
   };
 
   const handleEditChange = (id, field, value) => {
