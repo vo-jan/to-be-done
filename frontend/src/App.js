@@ -91,28 +91,26 @@ function App() {
   const saveEdit = async (todo) => {
     const { text, comment, dueDate } = editData[todo.id];
   
+    // Only include dueDate if it's non-empty and valid
     const updated = {
       text,
       comment,
-      ...(dueDate ? { dueDate } : {}),
+      ...(dueDate && dueDate.trim() !== '' ? { dueDate } : {}),
       completedAt: todo.completedAt || null,
     };
   
     console.log('Sending update:', updated);
   
     try {
-      await axios.put(
-        `${BASE_URL}/${todo.id}`,
-        updated
-      );
-      setEditMode((prev) => ({ ...prev, [todo.id]: false }));
-      setEditData((prev) => {
-        const newData = { ...prev };
-        delete newData[todo.id];
-        return newData;
+      await axios.put(`${BASE_URL}/${todo.id}`, updated);
+      setEditMode(prev => ({ ...prev, [todo.id]: false }));
+      setEditData(prev => {
+        const copy = { ...prev };
+        delete copy[todo.id];
+        return copy;
       });
   
-      await fetchTodos(); // important!
+      await fetchTodos(); // Refresh the data
     } catch (err) {
       console.error('Save failed:', err.response?.data || err.message);
     }
