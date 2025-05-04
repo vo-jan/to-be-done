@@ -131,7 +131,7 @@ function App() {
 
   return (
     <div className={`app ${theme}`}>
-      <h1>📝 To-Be-Done Tracker</h1>
+      <h1>📝 to-be-done</h1>
       <button onClick={toggleTheme}>
         Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
       </button>
