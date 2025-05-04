@@ -12,6 +12,8 @@ function App() {
   const [editMode, setEditMode] = useState({});
   const [editData, setEditData] = useState({});
 
+  const BASE_URL = 'https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos';
+
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
@@ -20,7 +22,7 @@ function App() {
   };
 
   const fetchTodos = async () => {
-    const res = await axios.get('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos');
+    const res = await axios.get(BASE_URL);
     const allTodos = res.data;
     setTodos(allTodos.filter(todo => !todo.completedAt));
     setCompletedTodos(allTodos.filter(todo => todo.completedAt));
@@ -28,7 +30,7 @@ function App() {
 
   const addTodo = async () => {
     if (!newTodo) return;
-    await axios.post('https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos', {
+    await axios.post(BASE_URL, {
       text: newTodo,
       comment,
       dueDate
@@ -40,7 +42,7 @@ function App() {
   };
 
   const markAsCompleted = async (todo) => {
-    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, {
+    await axios.put(`${BASE_URL}/${todo.id}`, {
       ...todo,
       completedAt: new Date().toISOString()
     });
@@ -48,7 +50,7 @@ function App() {
   };
 
   const recoverTodo = async (todo) => {
-    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, {
+    await axios.put(`${BASE_URL}/${todo.id}`, {
       ...todo,
       completedAt: null
     });
@@ -56,16 +58,15 @@ function App() {
   };
 
   const deleteCompletedTodo = async (id) => {
-    await axios.delete(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${id}`);
+    await axios.delete(`${BASE_URL}/${id}`);
     fetchTodos();
   };
 
   const toggleEditMode = (todo) => {
     const isEntering = !editMode[todo.id];
     setEditMode(prev => ({ ...prev, [todo.id]: isEntering }));
-  
+
     if (isEntering) {
-      // Only set editData when entering edit mode
       setEditData(prev => ({
         ...prev,
         [todo.id]: {
@@ -88,29 +89,21 @@ function App() {
   };
 
   const saveEdit = async (todo) => {
-    if (!editData[todo.id]) return;
-  
+    console.log('Saving:', todo.id, editData[todo.id]);
     const updated = {
       ...todo,
-      ...editData[todo.id]
+      ...editData[todo.id],
     };
-  
-    await axios.put(
-      `https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`,
-      updated
-    );
-  
-    // Exit edit mode & clear local editData
+
+    await axios.put(`${BASE_URL}/${todo.id}`, updated);
     setEditMode(prev => ({ ...prev, [todo.id]: false }));
     setEditData(prev => {
-      const copy = { ...prev };
-      delete copy[todo.id];
-      return copy;
+      const newData = { ...prev };
+      delete newData[todo.id];
+      return newData;
     });
-  
-    fetchTodos(); // Refresh from server
+    fetchTodos();
   };
-  
 
   const cancelEdit = (id) => {
     setEditMode(prev => ({ ...prev, [id]: false }));
@@ -119,7 +112,7 @@ function App() {
       delete copy[id];
       return copy;
     });
-  };  
+  };
 
   useEffect(() => {
     fetchTodos();
@@ -155,7 +148,7 @@ function App() {
         {todos.map(todo => (
           <li key={todo.id} className="todo-item">
             <div className="todo-text">
-            {editMode[todo.id] && editData[todo.id] ? (
+              {editMode[todo.id] && editData[todo.id] ? (
                 <>
                   <input
                     value={editData[todo.id].text}
@@ -183,7 +176,6 @@ function App() {
                   )}
                 </>
               )}
-
             </div>
             <div className="todo-actions">
               <button onClick={() => toggleEditMode(todo)}>✏️</button>
