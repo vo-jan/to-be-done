@@ -61,15 +61,17 @@ function App() {
   };
 
   const toggleEditMode = (todo) => {
-    const enteringEdit = !editMode[todo.id];
-    setEditMode(prev => ({ ...prev, [todo.id]: enteringEdit }));
-    if (enteringEdit) {
+    const isEntering = !editMode[todo.id];
+    setEditMode(prev => ({ ...prev, [todo.id]: isEntering }));
+  
+    if (isEntering) {
+      // Only set editData when entering edit mode
       setEditData(prev => ({
         ...prev,
         [todo.id]: {
-          text: todo.text,
+          text: todo.text || '',
           comment: todo.comment || '',
-          dueDate: todo.dueDate || ''
+          dueDate: todo.dueDate || '',
         }
       }));
     }
@@ -86,28 +88,38 @@ function App() {
   };
 
   const saveEdit = async (todo) => {
+    if (!editData[todo.id]) return;
+  
     const updated = {
       ...todo,
       ...editData[todo.id]
     };
-    await axios.put(`https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`, updated);
+  
+    await axios.put(
+      `https://tobedone-be-ekd5hbf5f0dbb4ge.polandcentral-01.azurewebsites.net/todos/${todo.id}`,
+      updated
+    );
+  
+    // Exit edit mode & clear local editData
     setEditMode(prev => ({ ...prev, [todo.id]: false }));
     setEditData(prev => {
-      const newData = { ...prev };
-      delete newData[todo.id];
-      return newData;
+      const copy = { ...prev };
+      delete copy[todo.id];
+      return copy;
     });
-    fetchTodos();
+  
+    fetchTodos(); // Refresh from server
   };
+  
 
   const cancelEdit = (id) => {
     setEditMode(prev => ({ ...prev, [id]: false }));
     setEditData(prev => {
-      const newData = { ...prev };
-      delete newData[id];
-      return newData;
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
     });
-  };
+  };  
 
   useEffect(() => {
     fetchTodos();
@@ -143,20 +155,20 @@ function App() {
         {todos.map(todo => (
           <li key={todo.id} className="todo-item">
             <div className="todo-text">
-              {editMode[todo.id] ? (
+            {editMode[todo.id] && editData[todo.id] ? (
                 <>
                   <input
-                    value={editData[todo.id]?.text || ''}
+                    value={editData[todo.id].text}
                     onChange={(e) => handleEditChange(todo.id, 'text', e.target.value)}
                   />
                   <input
-                    value={editData[todo.id]?.comment || ''}
+                    value={editData[todo.id].comment}
                     onChange={(e) => handleEditChange(todo.id, 'comment', e.target.value)}
                     placeholder="Comment"
                   />
                   <input
                     type="datetime-local"
-                    value={editData[todo.id]?.dueDate || ''}
+                    value={editData[todo.id].dueDate}
                     onChange={(e) => handleEditChange(todo.id, 'dueDate', e.target.value)}
                   />
                   <button onClick={() => saveEdit(todo)}>💾</button>
@@ -171,6 +183,7 @@ function App() {
                   )}
                 </>
               )}
+
             </div>
             <div className="todo-actions">
               <button onClick={() => toggleEditMode(todo)}>✏️</button>
